@@ -2,39 +2,94 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Professional Calendar</title>
-    <link rel="stylesheet" href="calendar.css">
+    <title>Simple Calendar</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 400px;
+            margin: 20px auto;
+            text-align: center;
+        }
+        #calendar {
+            border: 1px solid #ddd;
+            padding: 10px;
+        }
+        #calendar table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        #calendar th, #calendar td {
+            border: 1px solid #ddd;
+            padding: 10px;
+        }
+        .today {
+            background-color: #007bff;
+            color: white;
+        }
+    </style>
 </head>
 <body>
-    <div class="calendar-container">
-        <div class="calendar-header">
-            <button id="prev-month" class="nav-btn">&lt;</button>
-            <div class="month-year">
-                <span id="current-month-year">Month Year</span>
-            </div>
-            <button id="next-month" class="nav-btn">&gt;</button>
-        </div>
-        
-        <div class="days-of-week">
-            <div>Sun</div>
-            <div>Mon</div>
-            <div>Tue</div>
-            <div>Wed</div>
-            <div>Thu</div>
-            <div>Fri</div>
-            <div>Sat</div>
-        </div>
-        
-        <div id="calendar-grid" class="calendar-grid">
-            <!-- Calendar days will be dynamically populated here -->
-        </div>
-        
-        <div class="current-time">
-            <span id="current-time">00:00:00</span>
-        </div>
-    </div>
+    <div id="current-date"></div>
+    <div id="calendar"></div>
+    <div id="current-time"></div>
 
-    <script src=<"calendar.js"></script>
+    <script>
+        function generateCalendar() {
+            const today = new Date();
+            const currentMonth = today.getMonth();
+            const currentYear = today.getFullYear();
+
+            // Display current date and time
+            document.getElementById('current-date').innerHTML = 
+                today.toLocaleDateString('en-US', { 
+                    month: 'long', 
+                    year: 'numeric' 
+                });
+
+            // Create calendar
+            const calendar = document.getElementById('calendar');
+            const firstDay = new Date(currentYear, currentMonth, 1);
+            const lastDay = new Date(currentYear, currentMonth + 1, 0);
+
+            let calendarHTML = '<table><tr><th>Sun</th><th>Mon</th><th>Tue</th><th>Wed</th><th>Thu</th><th>Fri</th><th>Sat</th></tr><tr>';
+
+            // Add blank cells for days before the first day
+            for (let i = 0; i < firstDay.getDay(); i++) {
+                calendarHTML += '<td></td>';
+            }
+
+            // Add days of the month
+            for (let day = 1; day <= lastDay.getDate(); day++) {
+                let cellDate = new Date(currentYear, currentMonth, day);
+                let className = (cellDate.toDateString() === today.toDateString()) ? 'today' : '';
+                
+                calendarHTML += `<td class="${className}">${day}</td>`;
+
+                if ((day + firstDay.getDay()) % 7 === 0) {
+                    calendarHTML += '</tr><tr>';
+                }
+            }
+
+            calendarHTML += '</tr></table>';
+            calendar.innerHTML = calendarHTML;
+        }
+
+        function updateTime() {
+            const now = new Date();
+            document.getElementById('current-time').innerHTML = 
+                now.toLocaleTimeString('en-US', {
+                    hour: '2-digit', 
+                    minute: '2-digit', 
+                    second: '2-digit'
+                });
+        }
+
+        // Initial generation
+        generateCalendar();
+        updateTime();
+
+        // Update time every second
+        setInterval(updateTime, 1000);
+    </script>
 </body>
 </html>
